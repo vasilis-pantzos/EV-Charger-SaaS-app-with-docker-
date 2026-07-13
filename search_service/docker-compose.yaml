@@ -1,0 +1,12 @@
+services:
+  search_api:
+    build: .
+    container_name: search_api
+    volumes:
+      - .:/app
+    networks:
+      - shared-api-network
+
+networks:
+  shared-api-network:
+    external: true

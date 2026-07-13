@@ -1,0 +1,38 @@
+services:
+  reg_db:
+    image: mysql:8.0
+    container_name: reg_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: registration_db
+      MYSQL_USER: reg_user
+      MYSQL_PASSWORD: reg_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - reg_db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shared-api-network
+
+  reg_app:
+    build: .
+    container_name: reg_app
+    environment:
+      - DB_HOST=reg_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=registration_db
+    volumes:
+      - .:/app
+    depends_on:
+      - reg_db
+    networks:
+      - shared-api-network
+
+volumes:
+  reg_db_data:
+
+networks:
+  shared-api-network:
+    external: true

@@ -1,0 +1,38 @@
+services:
+  stats_db:
+    image: mysql:8.0
+    container_name: stats_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: statistics_db
+      MYSQL_USER: stats_user
+      MYSQL_PASSWORD: stats_password
+    ports:
+      - "3307:3306" # Εξωτερική πόρτα 3307
+    volumes:
+      - stats_db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shared-api-network
+
+  stats_api:
+    build: .
+    container_name: stats_api
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=stats_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=statistics_db
+    depends_on:
+      - stats_db
+    networks:
+      - shared-api-network
+
+volumes:
+  stats_db_data:
+
+networks:
+  shared-api-network:
+    external: true

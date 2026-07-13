@@ -1,0 +1,14 @@
+services:
+  orchestrator_api:
+    build: .
+    container_name: orchestrator_api
+    ports:
+      - "4425:4425"
+    volumes:
+      - .:/app
+    networks:
+      - shared-api-network
+
+networks:
+  shared-api-network:
+    external: true

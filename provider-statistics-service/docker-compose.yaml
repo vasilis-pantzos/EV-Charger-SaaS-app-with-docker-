@@ -1,0 +1,40 @@
+
+
+services:
+  prov_stats_db:
+    image: mysql:8.0
+    container_name: prov_stats_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: provider_statistics_db
+      MYSQL_USER: prov_stats_user
+      MYSQL_PASSWORD: prov_stats_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - prov_db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shared-api-network
+
+  prov_stats_api:
+    build: .
+    container_name: prov_stats_api
+    environment:
+      - DB_HOST=prov_stats_db
+      - DB_USER=root             
+      - DB_PASSWORD=root_password
+      - DB_NAME=provider_statistics_db
+    volumes:
+      - .:/app     
+    depends_on:
+      - prov_stats_db
+    networks:
+      - shared-api-network
+
+volumes:
+  prov_db_data:
+
+networks:
+  shared-api-network:
+    external: true

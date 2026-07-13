@@ -1,0 +1,40 @@
+services:
+  # Η Βάση Δεδομένων σου (MySQL)
+  res_db:
+    image: mysql:8.0
+    container_name: res_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: reservation_db
+      MYSQL_USER: res_user
+      MYSQL_PASSWORD: res_password
+    ports:
+      - "3306:3306"  # Η προεπιλεγμένη θύρα της MySQL
+    volumes:
+      - res_db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shared-api-network
+
+  # Το Microservice σου (Python/FastAPI)
+  res_app:
+    build: .
+    container_name: reservation_api
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=res_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=reservation_db
+    depends_on:
+      - res_db
+    networks:
+      - shared-api-network
+
+volumes:
+  res_db_data:
+
+networks:
+  shared-api-network:
+    external: true

@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS Reservation (
+    id VARCHAR(255) PRIMARY KEY, 
+    pointId VARCHAR(255) NOT NULL,
+    userID VARCHAR(255) NOT NULL,  
+    startTime DATETIME NOT NULL,      
+    endTime DATETIME NOT NULL,  
+    status VARCHAR(255) NOT NULL
+);

@@ -1,0 +1,38 @@
+services:
+  invoice_db:
+    image: mysql:8.0
+    container_name: inv_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: invoice_db
+      MYSQL_USER: invoice_user
+      MYSQL_PASSWORD: invoice_password
+    ports:
+      - "3310:3306" # Χρησιμοποιούμε άλλη πόρτα στον host για να μην "χτυπήσει" με τα άλλα DBs
+    volumes:
+      - invoice_db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - shared-api-network
+
+  invoice_api:
+    build: .
+    container_name: invoice_api
+    environment:
+      - DB_HOST=inv_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=invoice_db
+    volumes:
+      - .:/app
+    depends_on:
+      - invoice_db
+    networks:
+      - shared-api-network
+
+volumes:
+  invoice_db_data:
+
+networks:
+  shared-api-network:
+    external: true
